@@ -8,4 +8,4 @@ transformers
 torch
 torchvision
 torchaudio
-
+langchain_community
