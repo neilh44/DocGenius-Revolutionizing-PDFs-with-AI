@@ -1,20 +1,17 @@
 from dotenv import load_dotenv
-import os
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
-from langchain.llms import OpenAI
-from langchain.callbacks import get_openai_callback
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 load_dotenv()
-from PIL import Image
-img = Image.open(r"https://github.com/neilh44/DocGenius-Revolutionizing-PDFs-with-AI/blob/main/images.jpeg")
-st.set_page_config(page_title="DocGenius: Document Generation AI", page_icon= img)
+st.set_page_config(page_title="DocGenius: Document Generation AI")
 st.header("Ask Your PDF📄")
 pdf = st.file_uploader("Upload your PDF", type="pdf")
+
+# Define the URL of the image hosted on GitHub
+image_url = "https://github.com/neilh44/DocGenius-Revolutionizing-PDFs-with-AI/blob/main/images.jpeg"
 
 if pdf is not None:
     pdf_reader = PdfReader(pdf)
@@ -31,16 +28,17 @@ if pdf is not None:
 
     chunks = text_splitter.split_text(text)
 
-    embeddings = OpenAIEmbeddings()
-    knowledge_base = FAISS.from_texts(chunks, embeddings)
-
     query = st.text_input("Ask your Question about your PDF")
     if query:
-        docs = knowledge_base.similarity_search(query)
+        tokenizer = AutoTokenizer.from_pretrained("mistral-community/Mixtral-8x22B-v0.1")
+        model = AutoModelForCausalLM.from_pretrained("mistral-community/Mixtral-8x22B-v0.1")
 
-        llm = OpenAI()
-        chain = load_qa_chain(llm, chain_type="stuff")
-        response = chain.run(input_documents=docs, question=query)
-           
-        st.success(response)
-        
+        inputs = tokenizer(query, chunks, return_tensors="pt", padding=True, truncation=True)
+        outputs = model.generate(**inputs, max_length=50)
+
+        answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+        st.success(answer)
+
+# Display the image using the provided URL
+st.image(image_url, caption='DocGenius Logo', use_column_width=True)
