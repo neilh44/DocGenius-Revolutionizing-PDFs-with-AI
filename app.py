@@ -11,7 +11,7 @@ from langchain.callbacks import get_openai_callback
 
 load_dotenv()
 from PIL import Image
-img = Image.open(r"C:\Users\KALYAN\Desktop\Projects\DocGenius\images.jpeg")
+img = Image.open(r"https://github.com/neilh44/DocGenius-Revolutionizing-PDFs-with-AI/blob/main/images.jpeg")
 st.set_page_config(page_title="DocGenius: Document Generation AI", page_icon= img)
 st.header("Ask Your PDF📄")
 pdf = st.file_uploader("Upload your PDF", type="pdf")
