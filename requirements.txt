@@ -4,3 +4,4 @@ langchain
 PyPDF2
 python-dotenv
 streamlit
+transformers
