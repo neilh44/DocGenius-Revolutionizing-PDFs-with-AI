@@ -5,3 +5,7 @@ PyPDF2
 python-dotenv
 streamlit
 transformers
+torch
+torchvision
+torchaudio
+
